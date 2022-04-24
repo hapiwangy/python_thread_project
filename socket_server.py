@@ -1,6 +1,6 @@
 import socket
 import threading
-import time
+import pickle
 from tkinter.tix import DisplayStyle
 from xml.etree.ElementTree import TreeBuilder
 FORMAT = "utf-8"
