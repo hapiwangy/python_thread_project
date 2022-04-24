@@ -17,6 +17,7 @@ server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 # 把server和ADDR綁在一起
 server.bind(ADDR)
 # 此函數負責個別的連接
+
 def handle_client(conn, addr):
     print(f"[NEW CONNECTIONS] {addr} connected")
     connected = True
@@ -24,11 +25,14 @@ def handle_client(conn, addr):
         data = b""
         msg = conn.recv(4096)
         data = pickle.loads(msg)
-        if data != b'':
-            print(data)
-        if data == DISCONNECT_MSG:
+        if data[1] == DISCONNECT_MSG:
             connected = False
+            break
+        if data != '':
+            print(f"{data[0]} says",data[1])
+    print(f"{data[0]} DISCONNECT")
     conn.close()
+    
     '''
     connected = True
     while connected:
@@ -54,6 +58,6 @@ def start():
         thread = threading.Thread(target = handle_client, args = (conn, addr))
         thread.start()
         print(f"[ACTIVE CONNECTING] {threading.activeCount() - 1}")
-
-print("[start] server is starting")
-start()
+if __name__ == "__main__":
+    print("[start] server is starting")
+    start()
