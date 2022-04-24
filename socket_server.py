@@ -1,8 +1,6 @@
 import socket
 import threading
 import pickle
-from tkinter.tix import DisplayStyle
-from xml.etree.ElementTree import TreeBuilder
 FORMAT = "utf-8"
 HEADER = 64
 # choose a port that is unused
@@ -23,6 +21,17 @@ def handle_client(conn, addr):
     print(f"[NEW CONNECTIONS] {addr} connected")
     connected = True
     while connected:
+        data = b""
+        msg = conn.recv(4096)
+        data = pickle.loads(msg)
+        if data != b'':
+            print(data)
+        if data == DISCONNECT_MSG:
+            connected = False
+    conn.close()
+    '''
+    connected = True
+    while connected:
         # blocking line of code:代表會等到有新的訊息近來才會繼續執行
         # 先接收一次訊息(此為訊息長度)，第二次接收訊息才是訊息本身
         msg_length = conn.recv(HEADER).decode(FORMAT)
@@ -34,17 +43,17 @@ def handle_client(conn, addr):
             print(f"[{addr}] {msg}")
             conn.send("MSG received".encode(FORMAT))
     conn.close()
-
+    '''
 
 # 此函數負責所有新的client連接
 def start():
     server.listen()
-    
     while True:
         # wait until the server connection
         conn, addr = server.accept()
         thread = threading.Thread(target = handle_client, args = (conn, addr))
         thread.start()
         print(f"[ACTIVE CONNECTING] {threading.activeCount() - 1}")
+
 print("[start] server is starting")
 start()
